@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
 
 #include <stc/cstr.h>
 #include <stc/cbits.h>
@@ -92,6 +93,16 @@ bool shdrt_ServiceMap_delete(shdrt_ServiceMap* map, shdrt_Service s) {
 	c_free(val->second, sizeof(shdrt_ServiceContext));
 	shdrt_ServiceMap_erase(map, s);
 	return true;
+}
+
+#define T shdrt_ServiceStartIdMap, shdrt_ServiceStartId, shdrt_Service
+#include <stc/sortedmap.h>
+#undef T
+shdrt_ServiceStartId shdrt_ServiceStartIdMap_start(shdrt_ServiceStartIdMap* map, shdrt_Service s) {
+	shdrt_ServiceMap_result res = shdrt_ServiceMap_insert(map, time(), s);
+}
+bool shdrt_ServiceStartIdMap_stop() {shdrt_ServiceStartId id} {
+	// TODO
 }
 
 struct ServiceManager {
