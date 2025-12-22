@@ -33,10 +33,9 @@ typedef enum {
 } shdrt_ServiceContinuationMode;
 typedef int64_t shdrt_ServiceStartId;
 
-
 #define SHDRT_SERVICE_START_FLAGS_LIST(X) \
-	X(shdrt_SERVICE_START_FLAG_REDELIVERY) \
-	X(shdrt_SERVICE_START_FLAG_RETRY) 
+	X(SHDRT_SERVICE_START_FLAG_REDELIVERY) \
+	X(SHDRT_SERVICE_START_FLAG_RETRY) 
 #define SHDRT_SERVICE_START_FLAGS_COUNT (0 SHDRT_SERVICE_START_FLAGS_LIST(COUNT_ITEMS))
 #define T shdrt_ServiceStartBitset, SHDRT_SERVICE_START_FLAGS_COUNT
 #include <stc/cbits.h>
@@ -47,11 +46,13 @@ typedef enum {
 #undef GENERATE_ENUM
 } shdrt_ServiceStartFlags;
 
+typedef void(*shdrt_ServiceStopCallback)(shdrt_ServiceManager*, shdrt_ServiceStartId);
 typedef struct {
 	void* user;
 	shdrt_ServiceContinuationMode continuation_mode;
-
-	void (*stop)(shdrt_ServiceStartId);
+	
+	shdrt_ServiceManager* man;
+	shdrt_ServiceStopCallback stop;
 } shdrt_ServiceContext;
 
 typedef struct {
@@ -80,8 +81,8 @@ static int shdrt_Service_cmp(const shdrt_Service* a, const shdrt_Service* b) {
 #include <stc/sortedmap.h>
 #undef T
 typedef void(*shdrt_ServiceStopCallback)(shdrt_ServiceStartId);
-shdrt_ServiceContext* shdrt_ServiceMap_add(shdrt_ServiceMap* map, shdrt_Service s, shdrt_ServiceStopCallback stop) {
-	shdrt_ServiceContext* ctx = c_new(shdrt_ServiceContext, {.user = NULL, .continuation_mode = 0, .stop = stop});
+shdrt_ServiceContext* shdrt_ServiceMap_add(shdrt_ServiceMap* map, shdrt_Service s, shdrt_ServiceManager* man, shdrt_ServiceStopCallback stop) {
+	shdrt_ServiceContext* ctx = c_new(shdrt_ServiceContext, {.user = NULL, .continuation_mode = 0, .man = man, .stop = stop});
 	shdrt_ServiceMap_result res = shdrt_ServiceMap_insert(map, s, ctx);
 
 	return res.inserted ? res.ref->second : NULL;
@@ -101,13 +102,48 @@ bool shdrt_ServiceMap_delete(shdrt_ServiceMap* map, shdrt_Service s) {
 shdrt_ServiceStartId shdrt_ServiceStartIdMap_start(shdrt_ServiceStartIdMap* map, shdrt_Service s) {
 	shdrt_ServiceMap_result res = shdrt_ServiceMap_insert(map, time(), s);
 }
-bool shdrt_ServiceStartIdMap_stop() {shdrt_ServiceStartId id} {
-	// TODO
+bool shdrt_ServiceStartIdMap_stop(shdrt_ServiceStartIdMap* map, shdrt_ServiceStartId id) {
+	bool res = false;
+	const shdrt_ServiceStartIdMap_value* val = shdrt_ServiceStartIdMap_get(map, id);
+
+	if (!val) return false;
+	for (shdrt_ServiceStartIdMap_iter i = shdrt_ServiceStartIdMap_rbegin(map); i.ref; shdrt_ServiceStartIdMap_rnext(&i)) {
+		if (shdrt_Service_cmp(&i.ref->second, &val->second)) {
+			if (id == i.ref->first) res = true else break;
+		}
+	}
+
+	shdrt_ServiceStartIdMap_erase(id);i.ref->first
+	return res;
+}
+bool shdrt_ServiceStartIdMap_get_service(shdrt_ServiceStartIdMap* map, shdrt_ServiceStartId id, shdrt_Service* out) {
+	const shdrt_ServiceStartIdMap_value* val = shdrt_ServiceStartIdMap_get(map, id);
+
+	if (val) { 
+		*out = val->second; 
+		return SHDRT_RESULT_OK; 
+	} else {
+		return SHDRT_RESULT_NOT_FOUND;
+	}
+}
+void shdrt_ServiceStartIdMap_forget(shdrt_ServiceStartIdMap* map, shdrt_Service s) {
+	for (shdrt_ServiceStartIdMap_iter i = shdrt_ServiceStartIdMap_rbegin(map); i.ref; ) {
+		if (shdrt_Service_cmp(&i.ref->second, s)) 
+			i = shdrt_ServiceStartIdMap_erase_at(map, i); 
+		else shdrt_ServiceStartIdMap_rnext(&i);
+	}
 }
 
 struct ServiceManager {
 	shdrt_ServiceMap created;
 	shdrt_StartIdMap startIds;
+}
+void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStartId id) {
+	shdrt_Service s;
+	bool res = shdrt_ServiceStartIdMap_get_service(man->startIds, id, &s);
+	
+	if (!res) return;
+	if (shdrt_ServiceStartIdMap_stop(man->startIds, id)) shdrt_ServiceManager_stop_service(man, s);
 }
 
 int main(int argc, char *argv[]) {
