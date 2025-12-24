@@ -20,5 +20,11 @@ add_library(stc STATIC ${STC_SOURCES})
 target_include_directories(stc PUBLIC ${stc_SOURCE_DIR}/include)
 target_link_libraries(app PRIVATE stc)
 
-file(GLOB_RECURSE app_sources src/*.c)
+file(GLOB_RECURSE app_sources CONFIGURE_DEPENDS src/*.c)
 target_sources(app PRIVATE ${app_sources})
+
+option(BUILD_TESTS "Build the test suite" ON)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
