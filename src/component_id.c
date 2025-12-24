@@ -14,3 +14,9 @@ void shdrt_ComponentIdentifier_drop(shdrt_ComponentIdentifier* id) {
 	cstr_drop(&id->package);
 	cstr_drop(&id->name);
 }
+
+int shdrt_ComponentIdentifier_cmp(const shdrt_ComponentIdentifier* a, const shdrt_ComponentIdentifier* b) {
+	int c;
+
+	return (c = cstr_cmp(&a->package, &b->package)) == 0 ? cstr_cmp(&a->name, &b->name) : c;
+}

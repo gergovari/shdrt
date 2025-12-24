@@ -1,7 +1,7 @@
 #include "service.h"
 
-int shdrt_Service_cmp(const shdrt_Service* a, const shdrt_Service* b) {
-	int c;
+#include "../component_id.h"
 
-	return (c = cstr_cmp(&a->id.package, &b->id.package)) == 0 ? cstr_cmp(&a->id.name, &b->id.name) : c;
+int shdrt_Service_cmp(const shdrt_Service* a, const shdrt_Service* b) {
+	return shdrt_ComponentIdentifier_cmp(&a->id, &b->id);
 }
