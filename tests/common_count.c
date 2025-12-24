@@ -15,6 +15,7 @@ void tearDown(void) {}
 
 void test_common_count(void) {
 	TEST_ASSERT_EQUAL_INT(EXPECTED_COUNT, LIST_COUNT);
+	TEST_ASSERT_NOT_EQUAL_INT(EXPECTED_COUNT-1, LIST_COUNT);
 }
 
 int main(void) {
