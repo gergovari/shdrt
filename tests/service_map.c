@@ -47,6 +47,8 @@ void test_add(void) {
 	TEST_ASSERT_EQUAL_PTR(ctx, val->second);
 	TEST_ASSERT_TRUE(shdrt_Service_cmp(global_s, &val->first) == 0);
 	TEST_ASSERT_FALSE(shdrt_Service_cmp(global_s2, &val->first) == 0);
+
+	shdrt_ServiceMap_drop(&map);
 }
 
 void test_delete(void) {
@@ -67,6 +69,8 @@ void test_delete(void) {
 	val2 = shdrt_ServiceMap_get(&map, *global_s2);
 	TEST_ASSERT_FALSE(val);
 	TEST_ASSERT_FALSE(val2);
+
+	shdrt_ServiceMap_drop(&map);
 }
 
 int main(void) {

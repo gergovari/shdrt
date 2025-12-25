@@ -22,6 +22,9 @@ void setUp(void) {
 }
 
 void tearDown(void) {
+	shdrt_ComponentIdentifier_drop(global);
+	shdrt_ComponentIdentifier_drop(global2);
+
 	c_free(global, sizeof(shdrt_ComponentIdentifier));
 	c_free(global2, sizeof(shdrt_ComponentIdentifier));
 }
@@ -35,6 +38,8 @@ void test_make(void) {
 
 	TEST_ASSERT_TRUE(strcmp(package2, cstr_str(&id.package)) != 0);
 	TEST_ASSERT_TRUE(strcmp(name2, cstr_str(&id.name)) != 0);
+
+	shdrt_ComponentIdentifier_drop(&id);
 }
 
 void test_clone(void) {
@@ -45,6 +50,8 @@ void test_clone(void) {
 
 	TEST_ASSERT_TRUE(strcmp(cstr_str(&global2->package), cstr_str(&id2.package)) != 0);
 	TEST_ASSERT_TRUE(strcmp(cstr_str(&global2->name), cstr_str(&id2.name)) != 0);
+
+	shdrt_ComponentIdentifier_drop(&id2);
 }
 
 int main(void) {
