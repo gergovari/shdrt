@@ -38,5 +38,5 @@ bool shdrt_ServiceStartIdMap_get_service(shdrt_ServiceStartIdMap* map, shdrt_Ser
 void shdrt_ServiceStartIdMap_forget(shdrt_ServiceStartIdMap* map, shdrt_Service s) {
 	shdrt_ServiceStartIdMap_iter i = shdrt_ServiceStartIdMap_begin(map);
 
-	while (i.ref) if (shdrt_Service_cmp(&i.ref->second, &s)) i = shdrt_ServiceStartIdMap_erase_at(map, i); else shdrt_ServiceStartIdMap_next(&i);
+	while (i.ref) if (shdrt_Service_cmp(&i.ref->second, &s) == 0) i = shdrt_ServiceStartIdMap_erase_at(map, i); else shdrt_ServiceStartIdMap_next(&i);
 }
