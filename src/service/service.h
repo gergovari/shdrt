@@ -23,4 +23,4 @@ typedef struct {
 } shdrt_Service;
 
 int shdrt_Service_cmp(const shdrt_Service* a, const shdrt_Service* b);
-// TODO: _equals
+bool shdrt_Service_equals(const shdrt_Service* a, const shdrt_Service* b);
