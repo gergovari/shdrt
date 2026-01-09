@@ -1,8 +1,16 @@
 #include "start_id_map.h"
-#include <time.h>
+
+#include <stdlib.h>
+
+int64_t shdrt_ServiceStartIdMap_generate_id(shdrt_ServiceStartIdMap* map) {
+	int64_t id = rand();
+
+	while (shdrt_ServiceStartIdMap_get(map, id) != NULL) id = rand();
+	return id;
+}
 
 bool shdrt_ServiceStartIdMap_start(shdrt_ServiceStartIdMap* map, shdrt_Service s, shdrt_ServiceStartId* id) {
-	shdrt_ServiceStartIdMap_result res = shdrt_ServiceStartIdMap_insert(map, time(NULL), s);
+	shdrt_ServiceStartIdMap_result res = shdrt_ServiceStartIdMap_insert(map, shdrt_ServiceStartIdMap_generate_id(map), s);
 
 	if (res.inserted) {
 		*id = res.ref->first;
