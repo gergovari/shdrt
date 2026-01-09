@@ -79,6 +79,8 @@ void test_get_service(void) {
 
 // TODO: test for multiple get_service
 
+// TODO: test for start_id stop behaviour
+
 int main(void) {
 	UNITY_BEGIN();
 
