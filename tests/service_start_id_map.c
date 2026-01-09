@@ -158,7 +158,25 @@ void test_get_service_multiple(void) {
 	TEST_ASSERT_FALSE(shdrt_ServiceStartIdMap_get_service(&map, id, &s2out));
 }
 
-// TODO: test for start_id stop behaviour
+void test_start_id_stop(void) {
+	shdrt_Service s = { .id = shdrt_ComponentIdentifier_make("foo", "bar") };
+
+	shdrt_ServiceStartIdMap map = {0};
+	shdrt_ServiceStartId id;
+	shdrt_ServiceStartId id2;
+
+	TEST_ASSERT_TRUE(shdrt_ServiceStartIdMap_start(&map, s, &id));
+	TEST_ASSERT_TRUE(shdrt_ServiceStartIdMap_start(&map, s, &id2));
+
+	TEST_ASSERT_FALSE(shdrt_ServiceStartIdMap_stop(&map, id));
+	TEST_ASSERT_TRUE(shdrt_ServiceStartIdMap_stop(&map, id2));
+
+	TEST_ASSERT_TRUE(shdrt_ServiceStartIdMap_start(&map, s, &id));
+	TEST_ASSERT_TRUE(shdrt_ServiceStartIdMap_start(&map, s, &id2));
+
+	TEST_ASSERT_TRUE(shdrt_ServiceStartIdMap_stop(&map, id2));
+	TEST_ASSERT_FALSE(shdrt_ServiceStartIdMap_stop(&map, id));
+}
 
 int main(void) {
 	UNITY_BEGIN();
