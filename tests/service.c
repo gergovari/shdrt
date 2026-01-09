@@ -19,6 +19,8 @@ void test_cmp(void) {
 
 	TEST_ASSERT_FALSE(shdrt_Service_cmp(&s3, &s) == 0);
 	TEST_ASSERT_FALSE(shdrt_Service_cmp(&s3, &s2) == 0);
+
+	// TODO: test for ordering
 }
 
 int main(void) {

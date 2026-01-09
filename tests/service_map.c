@@ -51,6 +51,8 @@ void test_add(void) {
 	shdrt_ServiceMap_drop(&map);
 }
 
+// TODO: test for multiple add
+
 void test_delete(void) {
 	shdrt_ServiceMap map = c_make(shdrt_ServiceMap, {*global_s});
 	
@@ -72,6 +74,8 @@ void test_delete(void) {
 
 	shdrt_ServiceMap_drop(&map);
 }
+
+// TODO: test for multiple delete
 
 int main(void) {
 	UNITY_BEGIN();
