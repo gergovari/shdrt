@@ -6,11 +6,13 @@
 void setUp(void) {}
 void tearDown(void) {}
 
-// TODO: extend equal tests with weird edge cases
 void test_cmp_equals(void) {
 	shdrt_Service s = { .id = shdrt_ComponentIdentifier_make("foo", "bar") };
 	shdrt_Service s2 = { .id = shdrt_ComponentIdentifier_make("foo", "bar") };
+
 	shdrt_Service s3 = { .id = shdrt_ComponentIdentifier_make("dead", "beef") };
+	shdrt_Service s4 = { .id = shdrt_ComponentIdentifier_make("dead", "barf") };
+	shdrt_Service s5 = { .id = shdrt_ComponentIdentifier_make("alive", "beef") };
 
 	TEST_ASSERT_TRUE(shdrt_Service_cmp(&s, &s2) == 0);
 	TEST_ASSERT_FALSE(shdrt_Service_cmp(&s, &s3) == 0);
@@ -20,11 +22,17 @@ void test_cmp_equals(void) {
 
 	TEST_ASSERT_FALSE(shdrt_Service_cmp(&s3, &s) == 0);
 	TEST_ASSERT_FALSE(shdrt_Service_cmp(&s3, &s2) == 0);
+
+	TEST_ASSERT_FALSE(shdrt_Service_cmp(&s3, &s4) == 0);
+	TEST_ASSERT_FALSE(shdrt_Service_cmp(&s3, &s5) == 0);
 }
 void test_equals() {
 	shdrt_Service s = { .id = shdrt_ComponentIdentifier_make("foo", "bar") };
 	shdrt_Service s2 = { .id = shdrt_ComponentIdentifier_make("foo", "bar") };
+
 	shdrt_Service s3 = { .id = shdrt_ComponentIdentifier_make("dead", "beef") };
+	shdrt_Service s4 = { .id = shdrt_ComponentIdentifier_make("dead", "barf") };
+	shdrt_Service s5 = { .id = shdrt_ComponentIdentifier_make("alive", "beef") };
 
 	TEST_ASSERT_TRUE(shdrt_Service_equals(&s, &s2));
 	TEST_ASSERT_FALSE(shdrt_Service_equals(&s, &s3));
@@ -34,6 +42,9 @@ void test_equals() {
 
 	TEST_ASSERT_FALSE(shdrt_Service_equals(&s3, &s));
 	TEST_ASSERT_FALSE(shdrt_Service_equals(&s3, &s2));
+
+	TEST_ASSERT_FALSE(shdrt_Service_equals(&s3, &s4));
+	TEST_ASSERT_FALSE(shdrt_Service_equals(&s3, &s5));
 }
 
 void test_cmp_ordering(void) {
