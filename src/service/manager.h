@@ -11,3 +11,4 @@ typedef struct shdrt_ServiceManager {
 } shdrt_ServiceManager;
 
 void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStartId id);
+// TODO: implement needed interface
