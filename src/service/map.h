@@ -9,5 +9,5 @@
 #include <stc/sortedmap.h>
 #undef T
 
-shdrt_ServiceContext* shdrt_ServiceMap_add(shdrt_ServiceMap* map, shdrt_Service s, void* user, shdrt_ServiceStopCallback stop);
+shdrt_ServiceContext* shdrt_ServiceMap_add(shdrt_ServiceMap* map, shdrt_Service s, shdrt_ServiceStopCallback stop);
 bool shdrt_ServiceMap_delete(shdrt_ServiceMap* map, shdrt_Service s);

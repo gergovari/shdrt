@@ -8,19 +8,24 @@ typedef struct shdrt_ServiceManager shdrt_ServiceManager;
 static shdrt_Service* global_s;
 static shdrt_Service* global_s2;
 
+void dummy_func(shdrt_ServiceManager* man, shdrt_ServiceStartId id) {}
+
+bool dummy_on_create(shdrt_ServiceContext* ctx) { return true; }
+void dummy_on_destroy(shdrt_ServiceContext* ctx) {}
+
 void setUp(void) {
 	global_s = c_new(shdrt_Service, {
 		.id = { .package = cstr_from("dead"), .name = cstr_from("beef") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL }
 	);
 	global_s2 = c_new(shdrt_Service, {
 		.id = { .package = cstr_from("foo"), .name = cstr_from("bar") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL }
 	);
 }
@@ -30,16 +35,12 @@ void tearDown(void) {
 	c_free(global_s2, sizeof(shdrt_Service));
 }
 
-void dummy_func(shdrt_ServiceManager* man, shdrt_ServiceStartId id) {}
-
 void test_add(void) {
-	int dummy = 1;
 	shdrt_ServiceMap map = {0};
 
-	shdrt_ServiceContext* ctx = shdrt_ServiceMap_add(&map, *global_s, &dummy, dummy_func);
+	shdrt_ServiceContext* ctx = shdrt_ServiceMap_add(&map, *global_s, dummy_func);
 	
 	TEST_ASSERT_NOT_NULL(ctx);
-	TEST_ASSERT_EQUAL_PTR(ctx->user, &dummy);
 	TEST_ASSERT_EQUAL_PTR(ctx->stop, dummy_func);
 
 	const shdrt_ServiceMap_value* val = shdrt_ServiceMap_get(&map, *global_s);
@@ -55,29 +56,29 @@ void test_add_multiple(void) {
 	shdrt_ServiceMap map = {0};
 	shdrt_Service calc = { .id = { .package = cstr_from("shd"), .name = cstr_from("calculator") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 	shdrt_Service comm = { .id = { .package = cstr_from("shd"), .name = cstr_from("communication") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 	shdrt_Service sett = { .id = { .package = cstr_from("shd"), .name = cstr_from("settings") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 	shdrt_Service thirdp = { .id = { .package = cstr_from("acme"), .name = cstr_from("banking") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL));
 
 	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, calc));
 	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, comm));
@@ -111,29 +112,29 @@ void test_delete_multiple(void) {
 	shdrt_ServiceMap map = {0};
 	shdrt_Service calc = { .id = { .package = cstr_from("shd"), .name = cstr_from("calculator") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 	shdrt_Service comm = { .id = { .package = cstr_from("shd"), .name = cstr_from("communication") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 	shdrt_Service sett = { .id = { .package = cstr_from("shd"), .name = cstr_from("settings") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 	shdrt_Service thirdp = { .id = { .package = cstr_from("acme"), .name = cstr_from("banking") },
 		.on_start_command = NULL,
-		.on_create = NULL,
-		.on_destroy = NULL,
+		.on_create = dummy_on_create,
+		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL));
 	
 	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, calc));
 	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, comm));
