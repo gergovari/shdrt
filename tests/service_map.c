@@ -38,7 +38,7 @@ void tearDown(void) {
 void test_add(void) {
 	shdrt_ServiceMap map = {0};
 
-	shdrt_ServiceContext* ctx = shdrt_ServiceMap_add(&map, *global_s, dummy_func);
+	shdrt_ServiceContext* ctx = shdrt_ServiceMap_add(&map, *global_s, NULL, dummy_func);
 	
 	TEST_ASSERT_NOT_NULL(ctx);
 	TEST_ASSERT_EQUAL_PTR(ctx->stop, dummy_func);
@@ -75,10 +75,10 @@ void test_add_multiple(void) {
 		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL, NULL));
 
 	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, calc));
 	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, comm));
@@ -131,10 +131,10 @@ void test_delete_multiple(void) {
 		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL, NULL));
 	
 	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, calc));
 	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, comm));
