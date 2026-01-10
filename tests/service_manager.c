@@ -154,18 +154,12 @@ void test_stop_self(void) {
 	}
 }
 
-// TODO: multiples
 int main(void) {
 	UNITY_BEGIN();
 
 	RUN_TEST(test_start);
-	//RUN_TEST(test_start_multiple);
-
 	RUN_TEST(test_stop);
-	//RUN_TEST(test_stop_multiple);
-
 	RUN_TEST(test_stop_self);
-	//RUN_TEST(test_stop_self_multiple);
 
 	return UNITY_END();
 }
