@@ -2,10 +2,19 @@
 
 #include "context.h"
 
+shdrt_ServiceManager shdrt_ServiceManager_make() {
+	return (shdrt_ServiceManager){ .created = { 0 }, .startIds = { 0 } };
+}
+
+void shdrt_ServiceManager_drop(shdrt_ServiceManager* man) {
+	shdrt_ServiceMap_drop(&man->created);
+	shdrt_ServiceStartIdMap_drop(&man->startIds);
+}
+
 shdrt_ServiceContext* shdrt_ServiceManager_create(shdrt_ServiceManager* man, shdrt_Service s) {
 	shdrt_ServiceContext* ctx;
 	
-	if (!(ctx = shdrt_ServiceMap_add(&man->created, s, shdrt_ServiceManager_stop_self))) return NULL;
+	if (!(ctx = shdrt_ServiceMap_add(&man->created, s, man, shdrt_ServiceManager_stop_self))) return NULL;
 	return ctx;
 }
 
@@ -17,7 +26,7 @@ bool shdrt_ServiceManager_start(shdrt_ServiceManager* man, shdrt_Service s, shdr
 	shdrt_ServiceStartId id;
 
 	if (!(ctx = shdrt_ServiceManager_create(man, s))) return false;
-	
+
 	if (shdrt_ServiceStartIdMap_start(&man->startIds, s, &id)) 
 		shdrt_ServiceManager_set_continuation_mode(s, s.on_start_command(ctx, intent, false, id));
 		// TODO: implement intent redelivery

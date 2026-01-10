@@ -10,6 +10,9 @@ typedef struct shdrt_ServiceManager {
 	shdrt_ServiceStartIdMap startIds;
 } shdrt_ServiceManager;
 
+shdrt_ServiceManager shdrt_ServiceManager_make();
+void shdrt_ServiceManager_drop(shdrt_ServiceManager* man);
+
 void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStartId id);
 
 bool shdrt_ServiceManager_start(shdrt_ServiceManager* man, shdrt_Service s, shdrt_Intent intent);
