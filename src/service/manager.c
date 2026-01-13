@@ -46,3 +46,15 @@ void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStar
 	if (!res) return;
 	if (shdrt_ServiceStartIdMap_stop(&man->startIds, id)) shdrt_ServiceManager_stop(man, s);
 }
+
+// TODO flags: NOT_FOREGROUND, ABOVE_CLIENT, WAIVE_PRIORITY, ADJUST_WITH_ACTIVITY, NOT_PERCEPTIBLE, INCLUDE_CAPABILITIES
+// TODO: cache binder if on_unbind returns true and if service is started (use intent as key)
+bool shdrt_ServiceManager_bind(shdrt_ServiceManager* man, shdrt_ServiceConnection* conn, shdrt_ServiceBindFlags flags) {
+	
+}
+// flag behavs:
+// auto create: create the service (but no starting), if not set and service not started return false
+
+void shdrt_ServiceManager_unbind(shdrt_ServiceManager* man, shdrt_ServiceConnection* conn) {
+
+}

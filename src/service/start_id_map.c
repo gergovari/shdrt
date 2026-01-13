@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 
+// TODO: why not just keep an increasing count?
 int64_t shdrt_ServiceStartIdMap_generate_id(shdrt_ServiceStartIdMap* map) {
 	int64_t id = rand();
 

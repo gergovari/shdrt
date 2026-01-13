@@ -20,3 +20,7 @@ int shdrt_ComponentIdentifier_cmp(const shdrt_ComponentIdentifier* a, const shdr
 
 	return (c = cstr_cmp(&a->package, &b->package)) == 0 ? cstr_cmp(&a->name, &b->name) : c;
 }
+
+int shdrt_ComponentIdentifier_equals(const shdrt_ComponentIdentifier* a, const shdrt_ComponentIdentifier* b) {
+	return shdrt_ComponentIdentifier_cmp(a, b) == 0;
+}

@@ -8,7 +8,7 @@
 #include "continuation_mode.h"
 #include "context.h"
 #include "start_id.h"
-#include "remote_interface.h"
+#include "binder.h"
 #include "start_flags.h"
 
 typedef struct {
@@ -18,7 +18,9 @@ typedef struct {
 	bool (*on_create)(shdrt_ServiceContext*);
 	void (*on_destroy)(shdrt_ServiceContext*);
 
-	shdrt_ServiceRemoteInterface* (*on_bind)(shdrt_Intent);
+	shdrt_ServiceBinder* (*on_bind)(shdrt_Intent);
+	shdrt_ServiceBinder* (*on_rebind)(shdrt_Intent);
+	bool (*on_unbind)(shdrt_Intent);
 } shdrt_Service;
 
 int shdrt_Service_cmp(const shdrt_Service* a, const shdrt_Service* b);
