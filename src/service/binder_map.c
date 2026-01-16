@@ -17,12 +17,6 @@ bool shdrt_ServiceBinderMap_add(shdrt_ServiceBinderMap* map, shdrt_Service s, sh
 	return res.inserted;
 }
 
-bool shdrt_ServiceBinderMap_delete(shdrt_ServiceBinderMap* map, shdrt_Intent intent) {
-	bool found = false;
-
-	c_foreach(it, shdrt_ServiceBinderMap, *map) {
-		if (shdrt_ServiceIntentBinderMap_erase(&it.ref->second, intent)) found = true;
-	}
-
-	return found;
+bool shdrt_ServiceBinderMap_delete(shdrt_ServiceBinderMap* map, shdrt_Service s) {
+	return shdrt_ServiceBinderMap_erase(map, s);
 }

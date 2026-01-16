@@ -14,4 +14,4 @@
 #undef T
 
 bool shdrt_ServiceBinderMap_add(shdrt_ServiceBinderMap* map, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceBinder* binder);
-bool shdrt_ServiceBinderMap_delete(shdrt_ServiceBinderMap* map, shdrt_Intent intent);
+bool shdrt_ServiceBinderMap_delete(shdrt_ServiceBinderMap* map, shdrt_Service s);
