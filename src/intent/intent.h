@@ -24,7 +24,7 @@ typedef struct {
 
 	shdrt_IntentCategoryFlags category;
 
-	void* extra;
+	void* extra; // TODO: replace it with smt IPC
 	shdrt_IntentFlags flags;
 } shdrt_Intent;
 

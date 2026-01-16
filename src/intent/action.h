@@ -15,4 +15,5 @@ typedef cstr shdrt_IntentAction;
 	SHDRT_INTENT_ACTION_LIST
 #undef X
 
-cstr shdrt_IntentAction_make(const char* name);
+shdrt_IntentAction shdrt_IntentAction_make(const char* name);
+int shdrt_IntentAction_cmp(const shdrt_IntentAction* a, const shdrt_IntentAction* b);
