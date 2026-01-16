@@ -1,6 +1,6 @@
 #include <unity.h>
 
-#include "../src/intent.h"
+#include "../src/intent/intent.h"
 #include "../src/component_id.h"
 
 void setUp(void) {}
@@ -12,9 +12,10 @@ void tearDown(void) {}
  * order on if it has id
  * */
 void test_cmp(void) {
-	shdrt_Intent = {
-		.id = shdrt_
-	}
+	shdrt_Intent one = {
+		.id = shdrt_ComponentIdentifier_make("a", "a"),
+		.action = shdrt_IntentAction_make(SHDRT_INTENT_ACTION_MAIN)
+	};
 }
 
 void test_equals(void) {

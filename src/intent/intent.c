@@ -2,7 +2,7 @@
 
 #include <stc/cstr.h>
 
-#include "component_id.h"
+#include "../component_id.h"
 
 int shdrt_Intent_cmp(const shdrt_Intent* a, const shdrt_Intent* b) {
 	bool id = a->explicitId && b->explicitId ? shdrt_ComponentIdentifier_equals(&a->id, &b->id) : a->explicitId == b->explicitId;

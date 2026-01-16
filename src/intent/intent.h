@@ -4,15 +4,16 @@
 
 #include <stc/cstr.h>
 
-#include "component_id.h"
-#include "category_flags.h"
-#include "intent_flags.h"
+#include "../component_id.h"
+#include "category.h"
+#include "action.h"
+#include "flags.h"
 
 typedef struct {
 	shdrt_ComponentIdentifier id;
 	bool explicitId;
 
-	cstr action;
+	shdrt_IntentAction action;
 	bool explicitAction;
 
 	cstr data;
@@ -21,7 +22,7 @@ typedef struct {
 	cstr type;
 	bool explicitType;
 
-	shdrt_CategoryFlags category;
+	shdrt_IntentCategoryFlags category;
 
 	void* extra;
 	shdrt_IntentFlags flags;

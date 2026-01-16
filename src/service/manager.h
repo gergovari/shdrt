@@ -3,7 +3,7 @@
 #include "map.h"
 #include "start_id_map.h"
 #include "service.h"
-#include "../intent.h"
+#include "../intent/intent.h"
 #include "bind_flags.h"
 
 typedef struct shdrt_ServiceManager {

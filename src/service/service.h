@@ -3,7 +3,7 @@
 #include <stc/cstr.h>
 
 #include "../component_id.h"
-#include "../intent.h"
+#include "../intent/intent.h"
 
 #include "continuation_mode.h"
 #include "context.h"
