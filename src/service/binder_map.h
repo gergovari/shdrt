@@ -13,7 +13,5 @@
 #include <stc/sortedmap.h>
 #undef T
 
-// TODO
-
-//bool shdrt_ServiceConnectionMap_add(shdrt_ServiceConnectionMap* map, shdrt_Service s, shdrt_ServiceConnection* conn);
-//bool shdrt_ServiceConnectionMap_delete(shdrt_ServiceConnectionMap* map, shdrt_ServiceConnection* conn);
+bool shdrt_ServiceBinderMap_add(shdrt_ServiceBinderMap* map, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceBinder* binder);
+bool shdrt_ServiceBinderMap_delete(shdrt_ServiceBinderMap* map, shdrt_Intent intent);

@@ -1,22 +1,28 @@
 #include "binder_map.h"
 
-// TODO
+bool shdrt_ServiceBinderMap_add(shdrt_ServiceBinderMap* map, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceBinder* binder) {
+	shdrt_ServiceBinderMap_iter it = shdrt_ServiceBinderMap_find(map, s);
 
-/*bool shdrt_ServiceConnectionMap_add(shdrt_ServiceConnectionMap* map, shdrt_Service s, shdrt_ServiceConnection* conn) {
-	shdrt_ServiceConnectionSet set = shdrt_ServiceConnectionSet_with_capacity(1);
-	shdrt_ServiceConnectionMap_value* val = shdrt_ServiceConnectionMap_get_mut(map, s);
-	
-	shdrt_ServiceConnectionSet_push(&set, conn);
-	return val ? shdrt_ServiceConnectionSet_insert(&val->second, conn).inserted : shdrt_ServiceConnectionMap_insert(map, s, set).inserted;
-}
+	if (it.ref == NULL) {
+		shdrt_ServiceIntentBinderMap inner = shdrt_ServiceIntentBinderMap_init();
+		shdrt_ServiceBinderMap_result res = shdrt_ServiceBinderMap_insert(map, s, inner);
+		
+		if (!res.inserted) return false;
 
-bool shdrt_ServiceConnectionMap_delete(shdrt_ServiceConnectionMap* map, shdrt_ServiceConnection* conn) {
-	for (c_each_kv(s, set, shdrt_ServiceConnectionMap, *map)) {
-		if (shdrt_ServiceConnectionSet_erase(set, conn)) {
-			if (shdrt_ServiceConnectionSet_size(set) == 0) shdrt_ServiceConnectionMap_erase(map, *s);
-			return true;
-		}
+		it.ref = res.ref;
 	}
 
-	return false;
-}*/
+	shdrt_ServiceIntentBinderMap_result res = shdrt_ServiceIntentBinderMap_insert_or_assign(&it.ref->second, intent, binder);
+
+	return res.inserted;
+}
+
+bool shdrt_ServiceBinderMap_delete(shdrt_ServiceBinderMap* map, shdrt_Intent intent) {
+	bool found = false;
+
+	c_foreach(it, shdrt_ServiceBinderMap, *map) {
+		if (shdrt_ServiceIntentBinderMap_erase(&it.ref->second, intent)) found = true;
+	}
+
+	return found;
+}
