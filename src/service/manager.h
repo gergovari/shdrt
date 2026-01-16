@@ -21,5 +21,5 @@ void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStar
 bool shdrt_ServiceManager_start(shdrt_ServiceManager* man, shdrt_Service s, shdrt_Intent intent);
 bool shdrt_ServiceManager_stop(shdrt_ServiceManager* man, shdrt_Service s);
 
-bool shdrt_ServiceManager_bind(shdrt_ServiceManager* man, shdrt_ServiceConnection* conn, shdrt_ServiceBindFlags flags);
+bool shdrt_ServiceManager_bind(shdrt_ServiceManager* man, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceConnection* conn, shdrt_ServiceBindFlags flags);
 void shdrt_ServiceManager_unbind(shdrt_ServiceManager* man, shdrt_ServiceConnection* conn);
