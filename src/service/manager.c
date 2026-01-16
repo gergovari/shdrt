@@ -49,6 +49,7 @@ void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStar
 
 // TODO flags: NOT_FOREGROUND, ABOVE_CLIENT, WAIVE_PRIORITY, ADJUST_WITH_ACTIVITY, NOT_PERCEPTIBLE, INCLUDE_CAPABILITIES
 // TODO: cache binder if on_unbind returns true and if service is started (use intent as key)
+// TODO: implement binder funcs
 bool shdrt_ServiceManager_bind(shdrt_ServiceManager* man, shdrt_ServiceConnection* conn, shdrt_ServiceBindFlags flags) {
 	
 }
