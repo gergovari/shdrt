@@ -19,8 +19,9 @@ typedef struct {
 	void (*on_destroy)(shdrt_ServiceContext*);
 
 	shdrt_ServiceBinder* (*on_bind)(shdrt_Intent);
-	shdrt_ServiceBinder* (*on_rebind)(shdrt_Intent);
 	bool (*on_unbind)(shdrt_Intent);
+
+	shdrt_ServiceBinder* (*on_rebind)(shdrt_Intent);
 } shdrt_Service;
 
 int shdrt_Service_cmp(const shdrt_Service* a, const shdrt_Service* b);
