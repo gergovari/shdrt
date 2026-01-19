@@ -13,5 +13,7 @@
 #include <stc/sortedmap.h>
 #undef T
 
-bool shdrt_ServiceBinderMap_add(shdrt_ServiceBinderMap* map, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceBinder* binder);
+bool shdrt_ServiceBinderMap_add(shdrt_ServiceBinderMap* map, shdrt_Service s, shdrt_Intent intent, const shdrt_ServiceBinder* binder);
 bool shdrt_ServiceBinderMap_delete(shdrt_ServiceBinderMap* map, shdrt_Service s);
+
+const shdrt_ServiceBinder* shdrt_ServiceBinderMap_get_binder(shdrt_ServiceBinderMap* map, shdrt_Service s, shdrt_Intent intent);
