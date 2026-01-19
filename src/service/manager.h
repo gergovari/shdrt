@@ -2,13 +2,24 @@
 
 #include "map.h"
 #include "start_id_map.h"
+
 #include "service.h"
 #include "../intent/intent.h"
+
+#include "connection_map.h"
+#include "binder_map.h"
+#include "connection_intent_map.h"
+#include "connection_binder_map.h"
 #include "bind_flags.h"
 
 typedef struct shdrt_ServiceManager {
 	shdrt_ServiceMap created;
 	shdrt_ServiceStartIdMap startIds;
+
+	shdrt_ServiceConnectionMap conns;
+	shdrt_ServiceBinderMap binders;
+	shdrt_ServiceConnectionIntentMap intents;
+	shdrt_ServiceConnectionBinderMap connBinders;
 } shdrt_ServiceManager;
 
 typedef struct shdrt_ServiceConnection shdrt_ServiceConnection;

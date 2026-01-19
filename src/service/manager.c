@@ -2,8 +2,12 @@
 
 #include "context.h"
 
+bool shdrt_ServiceManager_is_used(shdrt_ServiceManager* man, shdrt_Service s) {
+	return shdrt_ServiceMap_is_running(&man->created, s) || shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
+}
+
 shdrt_ServiceManager shdrt_ServiceManager_make() {
-	return (shdrt_ServiceManager){ .created = { 0 }, .startIds = { 0 } };
+	return (shdrt_ServiceManager){ .created = { 0 }, .startIds = { 0 }, .conns = { 0 }, .binders = { 0 }, .intents = { 0 }, .connBinders = { 0 } };
 }
 
 void shdrt_ServiceManager_drop(shdrt_ServiceManager* man) {
@@ -48,14 +52,39 @@ void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStar
 }
 
 // TODO flags: NOT_FOREGROUND, ABOVE_CLIENT, WAIVE_PRIORITY, ADJUST_WITH_ACTIVITY, NOT_PERCEPTIBLE, INCLUDE_CAPABILITIES
-// TODO: cache binder if on_unbind returns true and if service is started (use intent as key)
-// TODO: implement binder funcs
 bool shdrt_ServiceManager_bind(shdrt_ServiceManager* man, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceConnection* conn, shdrt_ServiceBindFlags flags) {
-	
+	const shdrt_ServiceBinder* binder;
+
+	if (!shdrt_ServiceConnectionMap_add(&man->conns, s, conn)) return false;
+
+	binder = shdrt_ServiceBinderMap_get_binder(&man->binders, s, intent);
+	conn->on_service_connected(s.id, binder == NULL ? s.on_bind(intent) : binder);
+
+	shdrt_ServiceConnectionIntentMap_add(&man->intents, conn, intent);
+	shdrt_ServiceConnectionBinderMap_add(&man->connBinders, conn, binder);
+
+	return true;
 }
 // flag behavs:
-// auto create: create the service (but no starting), if not set and service not started return false
+// TODO: auto create: create the service (but no starting), if not set and service not started return false
 
 void shdrt_ServiceManager_unbind(shdrt_ServiceManager* man, shdrt_ServiceConnection* conn) {
-
+	bool used;
+	shdrt_Service s;
+	shdrt_Intent intent;
+	const shdrt_ServiceBinder* binder = shdrt_ServiceConnectionBinderMap_get_binder(&man->connBinders, conn);
+	
+	if (!binder) return;
+	if (!shdrt_ServiceConnectionMap_get_service(&man->conns, conn, &s)) return;
+	if (!shdrt_ServiceConnectionIntentMap_get_intent(&man->intents, conn, &intent)) return;
+	
+	shdrt_ServiceConnectionMap_delete(&man->conns, conn);
+	shdrt_ServiceConnectionIntentMap_delete(&man->intents, conn);
+	shdrt_ServiceConnectionBinderMap_delete(&man->connBinders, conn);
+	
+	used = shdrt_ServiceManager_is_used(man, s);
+	if (s.on_unbind(intent) && used) shdrt_ServiceBinderMap_add(&man->binders, s, intent, binder);
+	if (!used) { 
+		shdrt_ServiceBinderMap_delete(&man->binders, s);
+	}
 }
