@@ -13,3 +13,5 @@ typedef struct shdrt_ServiceManager shdrt_ServiceManager;
 
 shdrt_ServiceContext* shdrt_ServiceMap_add(shdrt_ServiceMap* map, shdrt_Service s, shdrt_ServiceManager* man, shdrt_ServiceStopCallback stop);
 bool shdrt_ServiceMap_delete(shdrt_ServiceMap* map, shdrt_Service s);
+
+bool shdrt_ServiceMap_is_running(shdrt_ServiceMap* map, shdrt_Service s);

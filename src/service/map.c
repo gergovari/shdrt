@@ -26,3 +26,7 @@ bool shdrt_ServiceMap_delete(shdrt_ServiceMap* map, shdrt_Service s) {
 	c_free(ctx, sizeof(shdrt_ServiceContext));
 	return true;
 }
+
+bool shdrt_ServiceMap_is_running(shdrt_ServiceMap* map, shdrt_Service s) {
+	return shdrt_ServiceMap_contains(map, s);
+}
