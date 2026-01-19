@@ -14,3 +14,6 @@
 
 bool shdrt_ServiceConnectionMap_add(shdrt_ServiceConnectionMap* map, shdrt_Service s, shdrt_ServiceConnection* conn);
 bool shdrt_ServiceConnectionMap_delete(shdrt_ServiceConnectionMap* map, shdrt_ServiceConnection* conn);
+
+bool shdrt_ServiceConnectionMap_is_bound(shdrt_ServiceConnectionMap* map, shdrt_Service s);
+bool shdrt_ServiceConnectionMap_get_service(shdrt_ServiceConnectionMap* map, shdrt_ServiceConnection* conn, shdrt_Service* out);

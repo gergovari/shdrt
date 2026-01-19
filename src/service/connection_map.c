@@ -18,3 +18,17 @@ bool shdrt_ServiceConnectionMap_delete(shdrt_ServiceConnectionMap* map, shdrt_Se
 
 	return false;
 }
+
+bool shdrt_ServiceConnectionMap_is_bound(shdrt_ServiceConnectionMap* map, shdrt_Service s) {
+	return shdrt_ServiceConnectionMap_contains(map, s);
+}
+
+bool shdrt_ServiceConnectionMap_get_service(shdrt_ServiceConnectionMap* map, shdrt_ServiceConnection* conn, shdrt_Service* out) {
+	for (c_each_kv(s, set, shdrt_ServiceConnectionMap, *map)) {
+		if (shdrt_ServiceConnectionSet_contains(set, conn)) {
+			*out = *s;
+			return true;
+		}
+	}
+	return false;
+}
