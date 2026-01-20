@@ -1,6 +1,6 @@
 #pragma once
 
-#include "map.h"
+#include "context_map.h"
 #include "start_id_map.h"
 
 #include "service.h"
@@ -13,7 +13,7 @@
 #include "bind_flags.h"
 
 typedef struct shdrt_ServiceManager {
-	shdrt_ServiceMap created;
+	shdrt_ServiceContextMap created;
 	shdrt_ServiceStartIdMap startIds;
 
 	shdrt_ServiceConnectionMap conns;

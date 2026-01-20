@@ -1,6 +1,6 @@
 #include <unity.h>
 
-#include "../src/service/map.h"
+#include "../src/service/context_map.h"
 #include "../src/service/start_id.h"
 
 typedef struct shdrt_ServiceManager shdrt_ServiceManager;
@@ -36,24 +36,24 @@ void tearDown(void) {
 }
 
 void test_add(void) {
-	shdrt_ServiceMap map = {0};
+	shdrt_ServiceContextMap map = {0};
 
-	shdrt_ServiceContext* ctx = shdrt_ServiceMap_add(&map, *global_s, NULL, dummy_func);
+	shdrt_ServiceContext* ctx = shdrt_ServiceContextMap_create(&map, *global_s, NULL, dummy_func);
 	
 	TEST_ASSERT_NOT_NULL(ctx);
 	TEST_ASSERT_EQUAL_PTR(ctx->stop, dummy_func);
 
-	const shdrt_ServiceMap_value* val = shdrt_ServiceMap_get(&map, *global_s);
+	const shdrt_ServiceContextMap_value* val = shdrt_ServiceContextMap_get(&map, *global_s);
 	TEST_ASSERT_TRUE(val);
 	TEST_ASSERT_EQUAL_PTR(ctx, val->second);
 	TEST_ASSERT_TRUE(shdrt_Service_cmp(global_s, &val->first) == 0);
 	TEST_ASSERT_FALSE(shdrt_Service_cmp(global_s2, &val->first) == 0);
 
-	shdrt_ServiceMap_drop(&map);
+	shdrt_ServiceContextMap_drop(&map);
 }
 
 void test_add_multiple(void) {
-	shdrt_ServiceMap map = {0};
+	shdrt_ServiceContextMap map = {0};
 	shdrt_Service calc = { .id = { .package = cstr_from("shd"), .name = cstr_from("calculator") },
 		.on_start_command = NULL,
 		.on_create = dummy_on_create,
@@ -75,41 +75,41 @@ void test_add_multiple(void) {
 		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, calc, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, comm, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, sett, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, thirdp, NULL, NULL));
 
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, calc));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, comm));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, sett));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_get(&map, thirdp));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_get(&map, calc));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_get(&map, comm));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_get(&map, sett));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_get(&map, thirdp));
 }
 
 void test_delete(void) {
-	shdrt_ServiceMap map = c_make(shdrt_ServiceMap, {*global_s});
+	shdrt_ServiceContextMap map = c_make(shdrt_ServiceContextMap, {*global_s});
 	
-	const shdrt_ServiceMap_value* val = shdrt_ServiceMap_get(&map, *global_s);
-	const shdrt_ServiceMap_value* val2 = shdrt_ServiceMap_get(&map, *global_s2);
+	const shdrt_ServiceContextMap_value* val = shdrt_ServiceContextMap_get(&map, *global_s);
+	const shdrt_ServiceContextMap_value* val2 = shdrt_ServiceContextMap_get(&map, *global_s2);
 	TEST_ASSERT_TRUE(val);
 	TEST_ASSERT_FALSE(val2);
 
-	bool res = shdrt_ServiceMap_delete(&map, *global_s);
-	bool res2 = shdrt_ServiceMap_delete(&map, *global_s2);
+	bool res = shdrt_ServiceContextMap_destroy(&map, *global_s);
+	bool res2 = shdrt_ServiceContextMap_destroy(&map, *global_s2);
 
 	TEST_ASSERT_TRUE(res);
 	TEST_ASSERT_FALSE(res2);
 
-	val = shdrt_ServiceMap_get(&map, *global_s);
-	val2 = shdrt_ServiceMap_get(&map, *global_s2);
+	val = shdrt_ServiceContextMap_get(&map, *global_s);
+	val2 = shdrt_ServiceContextMap_get(&map, *global_s2);
 	TEST_ASSERT_FALSE(val);
 	TEST_ASSERT_FALSE(val2);
 
-	shdrt_ServiceMap_drop(&map);
+	shdrt_ServiceContextMap_drop(&map);
 }
 
 void test_delete_multiple(void) {
-	shdrt_ServiceMap map = {0};
+	shdrt_ServiceContextMap map = {0};
 	shdrt_Service calc = { .id = { .package = cstr_from("shd"), .name = cstr_from("calculator") },
 		.on_start_command = NULL,
 		.on_create = dummy_on_create,
@@ -131,22 +131,22 @@ void test_delete_multiple(void) {
 		.on_destroy = dummy_on_destroy,
 		.on_bind = NULL };
 
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, calc, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, comm, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, sett, NULL, NULL));
-	TEST_ASSERT_NOT_NULL(shdrt_ServiceMap_add(&map, thirdp, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, calc, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, comm, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, sett, NULL, NULL));
+	TEST_ASSERT_NOT_NULL(shdrt_ServiceContextMap_create(&map, thirdp, NULL, NULL));
 	
-	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, calc));
-	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, comm));
-	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, sett));
-	TEST_ASSERT_TRUE(shdrt_ServiceMap_delete(&map, thirdp));
+	TEST_ASSERT_TRUE(shdrt_ServiceContextMap_destroy(&map, calc));
+	TEST_ASSERT_TRUE(shdrt_ServiceContextMap_destroy(&map, comm));
+	TEST_ASSERT_TRUE(shdrt_ServiceContextMap_destroy(&map, sett));
+	TEST_ASSERT_TRUE(shdrt_ServiceContextMap_destroy(&map, thirdp));
 	
-	TEST_ASSERT_FALSE(shdrt_ServiceMap_delete(&map, calc));
+	TEST_ASSERT_FALSE(shdrt_ServiceContextMap_destroy(&map, calc));
 
-	TEST_ASSERT_NULL(shdrt_ServiceMap_get(&map, calc));
-	TEST_ASSERT_NULL(shdrt_ServiceMap_get(&map, comm));
-	TEST_ASSERT_NULL(shdrt_ServiceMap_get(&map, sett));
-	TEST_ASSERT_NULL(shdrt_ServiceMap_get(&map, thirdp));
+	TEST_ASSERT_NULL(shdrt_ServiceContextMap_get(&map, calc));
+	TEST_ASSERT_NULL(shdrt_ServiceContextMap_get(&map, comm));
+	TEST_ASSERT_NULL(shdrt_ServiceContextMap_get(&map, sett));
+	TEST_ASSERT_NULL(shdrt_ServiceContextMap_get(&map, thirdp));
 }
 
 int main(void) {

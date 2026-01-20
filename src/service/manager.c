@@ -3,7 +3,7 @@
 #include "context.h"
 
 bool shdrt_ServiceManager_is_used(shdrt_ServiceManager* man, shdrt_Service s) {
-	return shdrt_ServiceMap_is_running(&man->created, s) || shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
+	return shdrt_ServiceContextMap_is_created(&man->created, s) || shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
 }
 
 shdrt_ServiceManager shdrt_ServiceManager_make() {
@@ -11,14 +11,14 @@ shdrt_ServiceManager shdrt_ServiceManager_make() {
 }
 
 void shdrt_ServiceManager_drop(shdrt_ServiceManager* man) {
-	shdrt_ServiceMap_drop(&man->created);
+	shdrt_ServiceContextMap_drop(&man->created);
 	shdrt_ServiceStartIdMap_drop(&man->startIds);
 }
 
 shdrt_ServiceContext* shdrt_ServiceManager_create(shdrt_ServiceManager* man, shdrt_Service s) {
 	shdrt_ServiceContext* ctx;
 	
-	if (!(ctx = shdrt_ServiceMap_add(&man->created, s, man, shdrt_ServiceManager_stop_self))) return NULL;
+	if (!(ctx = shdrt_ServiceContextMap_create(&man->created, s, man, shdrt_ServiceManager_stop_self))) return NULL;
 	return ctx;
 }
 
@@ -40,7 +40,7 @@ bool shdrt_ServiceManager_start(shdrt_ServiceManager* man, shdrt_Service s, shdr
 
 bool shdrt_ServiceManager_stop(shdrt_ServiceManager* man, shdrt_Service s) {
 	shdrt_ServiceStartIdMap_forget(&man->startIds, s);
-	return shdrt_ServiceMap_delete(&man->created, s);
+	return shdrt_ServiceContextMap_destroy(&man->created, s);
 }
 
 void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStartId id) {
