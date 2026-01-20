@@ -1,6 +1,10 @@
 #include "manager.h"
 
+#include "bind_flags.h"
 #include "context.h"
+#include "context_map.h"
+
+// TODO: error handling (like if add returns false and such)
 
 bool shdrt_ServiceManager_is_used(shdrt_ServiceManager* man, shdrt_Service s) {
 	return shdrt_ServiceContextMap_is_created(&man->created, s) || shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
@@ -18,7 +22,8 @@ void shdrt_ServiceManager_drop(shdrt_ServiceManager* man) {
 shdrt_ServiceContext* shdrt_ServiceManager_create(shdrt_ServiceManager* man, shdrt_Service s) {
 	shdrt_ServiceContext* ctx;
 	
-	if (!(ctx = shdrt_ServiceContextMap_create(&man->created, s, man, shdrt_ServiceManager_stop_self))) return NULL;
+	if (!(ctx = shdrt_ServiceContextMap_get(&man->created, s)->second)) 
+		ctx = shdrt_ServiceContextMap_create(&man->created, s, man, shdrt_ServiceManager_stop_self);
 	return ctx;
 }
 
@@ -52,21 +57,23 @@ void shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStar
 }
 
 // TODO flags: NOT_FOREGROUND, ABOVE_CLIENT, WAIVE_PRIORITY, ADJUST_WITH_ACTIVITY, NOT_PERCEPTIBLE, INCLUDE_CAPABILITIES
-bool shdrt_ServiceManager_bind(shdrt_ServiceManager* man, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceConnection* conn, shdrt_ServiceBindFlags flags) {
+bool shdrt_ServiceManager_bind(shdrt_ServiceManager* man, shdrt_Service s, shdrt_Intent intent, shdrt_ServiceConnection* conn, shdrt_ServiceBindBitset flags) {
 	const shdrt_ServiceBinder* binder;
+	bool ret;
+
+	if (shdrt_ServiceBindBitset_is_set(flags, SHDRT_SERVICE_BIND_FLAG_AUTO_CREATE)) shdrt_ServiceManager_create(man, s);
+	if (!shdrt_ServiceManager_is_used(man, s)) return false;
 
 	if (!shdrt_ServiceConnectionMap_add(&man->conns, s, conn)) return false;
 
 	binder = shdrt_ServiceBinderMap_get_binder(&man->binders, s, intent);
 	conn->on_service_connected(s.id, binder == NULL ? s.on_bind(intent) : binder);
 
-	shdrt_ServiceConnectionIntentMap_add(&man->intents, conn, intent);
-	shdrt_ServiceConnectionBinderMap_add(&man->connBinders, conn, binder);
+	ret = shdrt_ServiceConnectionIntentMap_add(&man->intents, conn, intent);
+	ret = shdrt_ServiceConnectionBinderMap_add(&man->connBinders, conn, binder);
 
-	return true;
+	return ret;
 }
-// flag behavs:
-// TODO: auto create: create the service (but no starting), if not set and service not started return false
 
 void shdrt_ServiceManager_unbind(shdrt_ServiceManager* man, shdrt_ServiceConnection* conn) {
 	bool used;

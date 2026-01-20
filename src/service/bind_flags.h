@@ -23,3 +23,5 @@ typedef enum {
 	SHDRT_SERVICE_BIND_FLAGS_LIST(GENERATE_ENUM)
 #undef GENERATE_ENUM
 } shdrt_ServiceBindFlags;
+
+bool shdrt_ServiceBindBitset_is_set(shdrt_ServiceBindBitset flags, shdrt_ServiceBindFlags at);
