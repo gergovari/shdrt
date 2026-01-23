@@ -1,4 +1,5 @@
 #include "connection_intent_map.h"
+#include "connection.h"
 
 bool shdrt_ServiceConnectionIntentMap_add(shdrt_ServiceConnectionIntentMap *map,
                                           shdrt_ServiceConnection *conn,
@@ -15,7 +16,7 @@ bool shdrt_ServiceConnectionIntentMap_get_intent(
     shdrt_ServiceConnectionIntentMap *map, shdrt_ServiceConnection *conn,
     shdrt_Intent *out) {
   for (c_each_kv(c, intent, shdrt_ServiceConnectionIntentMap, *map)) {
-    if (c == conn) {
+    if ((shdrt_ServiceConnection *)c == conn) {
       *out = *intent;
       return true;
     }
