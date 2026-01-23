@@ -1,6 +1,5 @@
 #include "manager.h"
 
-#include "bind_flags.h"
 #include "context.h"
 #include "context_map.h"
 
@@ -71,6 +70,7 @@ void shdrt_ServiceManager_stop_self(shdrt_ServiceManager *man,
     shdrt_ServiceManager_stop(man, s);
 }
 
+/*
 // TODO flags: NOT_FOREGROUND, ABOVE_CLIENT, WAIVE_PRIORITY,
 // ADJUST_WITH_ACTIVITY, NOT_PERCEPTIBLE, INCLUDE_CAPABILITIES
 bool shdrt_ServiceManager_bind(shdrt_ServiceManager *man, shdrt_Service s,
@@ -125,3 +125,4 @@ void shdrt_ServiceManager_unbind(shdrt_ServiceManager *man,
     shdrt_ServiceBinderMap_delete(&man->binders, s);
   }
 }
+*/

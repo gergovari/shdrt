@@ -4,5 +4,4 @@
 
 typedef struct shdrt_ServiceManager shdrt_ServiceManager;
 
-typedef void (*shdrt_ServiceStopCallback)(shdrt_ServiceManager *,
-                                          shdrt_ServiceStartId);
+typedef void (*shdrt_ServiceStopCallback)(shdrt_ServiceManager*, shdrt_ServiceStartId);

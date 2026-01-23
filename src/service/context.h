@@ -7,10 +7,10 @@
 typedef struct shdrt_ServiceManager shdrt_ServiceManager;
 
 typedef struct {
-  void *user;
-  shdrt_ServiceContinuationMode continuation_mode;
+    void* user;
+    shdrt_ServiceContinuationMode continuation_mode;
 
-  shdrt_ServiceStopCallback stop;
+    shdrt_ServiceStopCallback stop;
 
-  shdrt_ServiceManager *man;
+    shdrt_ServiceManager* man;
 } shdrt_ServiceContext;
