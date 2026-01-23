@@ -2,17 +2,18 @@
 
 #include "../common.h"
 
-#define SHDRT_SERVICE_BIND_FLAGS_LIST(X) \
-	X(SHDRT_SERVICE_BIND_FLAG_AUTO_CREATE) \
-	X(SHDRT_SERVICE_BIND_FLAG_NOT_FOREGROUND) \
-	X(SHDRT_SERVICE_BIND_FLAG_ABOVE_CLIENT) \
-	X(SHDRT_SERVICE_BIND_FLAG_ALLOW_OOM_MANAGEMENT) \
-	X(SHDRT_SERVICE_BIND_FLAG_WAIVE_PRIORITY) \
-	X(SHDRT_SERVICE_BIND_FLAG_IMPORTANT) \
-	X(SHDRT_SERVICE_BIND_FLAG_ADJUST_WITH_ACTIVITY) \
-	X(SHDRT_SERVICE_BIND_FLAG_NOT_PERCEPTIBLE) \
-	X(SHDRT_SERVICE_BIND_FLAG_INCLUDE_CAPABILITIES)
-#define SHDRT_SERVICE_BIND_FLAGS_COUNT (0 SHDRT_SERVICE_BIND_FLAGS_LIST(COUNT_ITEMS))
+#define SHDRT_SERVICE_BIND_FLAGS_LIST(X)                                       \
+  X(SHDRT_SERVICE_BIND_FLAG_AUTO_CREATE)                                       \
+  X(SHDRT_SERVICE_BIND_FLAG_NOT_FOREGROUND)                                    \
+  X(SHDRT_SERVICE_BIND_FLAG_ABOVE_CLIENT)                                      \
+  X(SHDRT_SERVICE_BIND_FLAG_ALLOW_OOM_MANAGEMENT)                              \
+  X(SHDRT_SERVICE_BIND_FLAG_WAIVE_PRIORITY)                                    \
+  X(SHDRT_SERVICE_BIND_FLAG_IMPORTANT)                                         \
+  X(SHDRT_SERVICE_BIND_FLAG_ADJUST_WITH_ACTIVITY)                              \
+  X(SHDRT_SERVICE_BIND_FLAG_NOT_PERCEPTIBLE)                                   \
+  X(SHDRT_SERVICE_BIND_FLAG_INCLUDE_CAPABILITIES)
+#define SHDRT_SERVICE_BIND_FLAGS_COUNT                                         \
+  (0 SHDRT_SERVICE_BIND_FLAGS_LIST(COUNT_ITEMS))
 
 #define T shdrt_ServiceBindBitset, SHDRT_SERVICE_BIND_FLAGS_COUNT
 #include <stc/cbits.h>
@@ -20,8 +21,9 @@
 
 typedef enum {
 #define GENERATE_ENUM(name) name,
-	SHDRT_SERVICE_BIND_FLAGS_LIST(GENERATE_ENUM)
+  SHDRT_SERVICE_BIND_FLAGS_LIST(GENERATE_ENUM)
 #undef GENERATE_ENUM
 } shdrt_ServiceBindFlags;
 
-bool shdrt_ServiceBindBitset_is_set(shdrt_ServiceBindBitset flags, shdrt_ServiceBindFlags at);
+bool shdrt_ServiceBindBitset_is_set(shdrt_ServiceBindBitset flags,
+                                    shdrt_ServiceBindFlags at);

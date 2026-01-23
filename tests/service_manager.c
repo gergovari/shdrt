@@ -6,9 +6,9 @@ void tearDown(void) {}
 // TODO
 
 int main(void) {
-	UNITY_BEGIN();
+  UNITY_BEGIN();
 
-	//RUN_TEST(test_cmp_ordering);
+  // RUN_TEST(test_cmp_ordering);
 
-	return UNITY_END();
+  return UNITY_END();
 }
