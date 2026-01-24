@@ -5,69 +5,75 @@
 
 // TODO: error handling (like if add returns false and such)
 
-bool shdrt_ServiceManager_is_used(shdrt_ServiceManager *man, shdrt_Service s) {
-  return shdrt_ServiceContextMap_is_created(&man->created, s) ||
-         shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
+bool
+shdrt_ServiceManager_is_used(shdrt_ServiceManager* man, shdrt_Service s) {
+    return shdrt_ServiceContextMap_is_created(&man->created, s) ||
+           //shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
+           false;
 }
 
-shdrt_ServiceManager shdrt_ServiceManager_make() {
-  return (shdrt_ServiceManager){.created = {0},
-                                .startIds = {0},
-                                .conns = {0},
-                                .binders = {0},
-                                .intents = {0},
-                                .connBinders = {0}};
+shdrt_ServiceManager
+shdrt_ServiceManager_make() {
+    return (shdrt_ServiceManager){
+        //.created = {0}, .startIds = {0}, .conns = {0}, .binders = {0}, .intents = {0}, .connBinders = {0}};
+        .created = {0},
+        .startIds = {0}};
 }
 
-void shdrt_ServiceManager_drop(shdrt_ServiceManager *man) {
-  shdrt_ServiceContextMap_drop(&man->created);
-  shdrt_ServiceStartIdMap_drop(&man->startIds);
+void
+shdrt_ServiceManager_drop(shdrt_ServiceManager* man) {
+    shdrt_ServiceContextMap_drop(&man->created);
+    shdrt_ServiceStartIdMap_drop(&man->startIds);
 }
 
-shdrt_ServiceContext *shdrt_ServiceManager_create(shdrt_ServiceManager *man,
-                                                  shdrt_Service s) {
-  shdrt_ServiceContext *ctx;
+shdrt_ServiceContext*
+shdrt_ServiceManager_create(shdrt_ServiceManager* man, shdrt_Service s) {
+    shdrt_ServiceContext* ctx;
 
-  if (!(ctx = shdrt_ServiceContextMap_get(&man->created, s)->second))
-    ctx = shdrt_ServiceContextMap_create(&man->created, s, man,
-                                         shdrt_ServiceManager_stop_self);
-  return ctx;
+    if (!(ctx = shdrt_ServiceContextMap_get(&man->created, s)->second)) {
+        ctx = shdrt_ServiceContextMap_create(&man->created, s, man, shdrt_ServiceManager_stop_self);
+    }
+    return ctx;
 }
 
 // TODO: implement memory management
-void shdrt_ServiceManager_set_continuation_mode(
-    shdrt_Service s, shdrt_ServiceContinuationMode mode) {}
+void
+shdrt_ServiceManager_set_continuation_mode(shdrt_Service s, shdrt_ServiceContinuationMode mode) {}
 
-bool shdrt_ServiceManager_start(shdrt_ServiceManager *man, shdrt_Service s,
-                                shdrt_Intent intent) {
-  shdrt_ServiceContext *ctx;
-  shdrt_ServiceStartId id;
+bool
+shdrt_ServiceManager_start(shdrt_ServiceManager* man, shdrt_Service s, shdrt_Intent intent) {
+    shdrt_ServiceContext* ctx;
+    shdrt_ServiceStartId id;
 
-  if (!(ctx = shdrt_ServiceManager_create(man, s)))
-    return false;
+    if (!(ctx = shdrt_ServiceManager_create(man, s))) {
+        return false;
+    }
 
-  if (shdrt_ServiceStartIdMap_start(&man->startIds, s, &id))
-    shdrt_ServiceManager_set_continuation_mode(
-        s, s.on_start_command(ctx, intent, false, id));
-  // TODO: implement intent redelivery
+    if (shdrt_ServiceStartIdMap_start(&man->startIds, s, &id)) {
+        shdrt_ServiceManager_set_continuation_mode(s, s.on_start_command(ctx, intent, false, id));
+    }
+    // TODO: implement intent redelivery
 
-  return true;
+    return true;
 }
 
-bool shdrt_ServiceManager_stop(shdrt_ServiceManager *man, shdrt_Service s) {
-  shdrt_ServiceStartIdMap_forget(&man->startIds, s);
-  return shdrt_ServiceContextMap_destroy(&man->created, s);
+bool
+shdrt_ServiceManager_stop(shdrt_ServiceManager* man, shdrt_Service s) {
+    shdrt_ServiceStartIdMap_forget(&man->startIds, s);
+    return shdrt_ServiceContextMap_destroy(&man->created, s);
 }
 
-void shdrt_ServiceManager_stop_self(shdrt_ServiceManager *man,
-                                    shdrt_ServiceStartId id) {
-  shdrt_Service s;
-  bool res = shdrt_ServiceStartIdMap_get_service(&man->startIds, id, &s);
+void
+shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStartId id) {
+    shdrt_Service s;
+    bool res = shdrt_ServiceStartIdMap_get_service(&man->startIds, id, &s);
 
-  if (!res)
-    return;
-  if (shdrt_ServiceStartIdMap_stop(&man->startIds, id))
-    shdrt_ServiceManager_stop(man, s);
+    if (!res) {
+        return;
+    }
+    if (shdrt_ServiceStartIdMap_stop(&man->startIds, id)) {
+        shdrt_ServiceManager_stop(man, s);
+    }
 }
 
 /*
