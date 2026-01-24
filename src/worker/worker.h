@@ -1,15 +1,16 @@
 #pragma once
 
 #include <mqueue.h>
-#include <stc/algorithm.h>
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "component_id.h"
-#include "package.h"
-#include "package_id.h"
-#include "service/manager.h"
-#include "stc/sys/sumtype.h"
+#include <stc/algorithm.h>
+#include <stc/sys/sumtype.h>
+
+#include "../component_id.h"
+#include "../package/package.h"
+#include "../package/package_id.h"
+#include "../service/manager.h"
 
 #define SHDRT_WORKER_MQ_OUT_NAME   "/result_queue"
 #define SHDRT_WORKER_MQ_IN_FMT     "/worker_%" PRIu64 "_queue"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stc/cstr.h>
-#include "package_id.h"
+#include "package/package_id.h"
 
 typedef struct {
     shdrt_package_identifier_t package;

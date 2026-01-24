@@ -7,10 +7,10 @@
 
 #include <stc/sys/sumtype.h>
 
-#include "package.h"
-#include "package_id.h"
-#include "service/manager.h"
-#include "service/service.h"
+#include "../package/package.h"
+#include "../package/package_id.h"
+#include "../service/manager.h"
+#include "../service/service.h"
 
 ssize_t
 shdrt_worker_mq_receive(shdrt_worker_t* this, shdrt_worker_message_t* msg_ptr) {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "component_id.h"
+#include "../component_id.h"
+#include "../service/service.h" // IWYU pragma: keep
 #include "package_id.h"
-#include "service/service.h" // IWYU pragma: keep
 
 #define T shdrt_service_list, shdrt_Service
 #include <stc/list.h>
