@@ -29,10 +29,14 @@ shdrt_ServiceManager_drop(shdrt_ServiceManager* man) {
 shdrt_ServiceContext*
 shdrt_ServiceManager_create(shdrt_ServiceManager* man, shdrt_Service s) {
     shdrt_ServiceContext* ctx;
+    const shdrt_ServiceContextMap_value* val;
 
-    if (!(ctx = shdrt_ServiceContextMap_get(&man->created, s)->second)) {
+    if ((val = shdrt_ServiceContextMap_get(&man->created, s))) {
+        ctx = val->second;
+    } else {
         ctx = shdrt_ServiceContextMap_create(&man->created, s, man, shdrt_ServiceManager_stop_self);
     }
+
     return ctx;
 }
 
@@ -63,16 +67,19 @@ shdrt_ServiceManager_stop(shdrt_ServiceManager* man, shdrt_Service s) {
     return shdrt_ServiceContextMap_destroy(&man->created, s);
 }
 
-void
+bool
 shdrt_ServiceManager_stop_self(shdrt_ServiceManager* man, shdrt_ServiceStartId id) {
     shdrt_Service s;
     bool res = shdrt_ServiceStartIdMap_get_service(&man->startIds, id, &s);
 
     if (!res) {
-        return;
+        return false;
     }
     if (shdrt_ServiceStartIdMap_stop(&man->startIds, id)) {
         shdrt_ServiceManager_stop(man, s);
+        return true;
+    } else {
+        return false;
     }
 }
 
