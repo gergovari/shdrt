@@ -1,9 +1,10 @@
 #pragma once
 
 #include <stc/cstr.h>
+#include "package_id.h"
 
 typedef struct {
-    cstr package;
+    shdrt_package_identifier_t package;
     cstr name;
 } shdrt_ComponentIdentifier;
 
