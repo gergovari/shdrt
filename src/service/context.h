@@ -1,7 +1,6 @@
 #pragma once
 
 #include "continuation_mode.h"
-#include "start_id.h"
 #include "stop_callback.h"
 
 typedef struct shdrt_ServiceManager shdrt_ServiceManager;
