@@ -39,11 +39,11 @@ on_destroy(shdrt_ServiceContext* ctx) {
     destroyed = true;
     ((test_ctx_t*)ctx->user)->destroyed = true;
 
-    c_free(ctx->user, sizeof(test_ctx_t));
-
     TEST_ASSERT_TRUE(((test_ctx_t*)ctx->user)->created);
     TEST_ASSERT_TRUE(((test_ctx_t*)ctx->user)->destroyed);
     TEST_ASSERT_TRUE(((test_ctx_t*)ctx->user)->started);
+
+    c_free(ctx->user, sizeof(test_ctx_t));
 }
 
 shdrt_ServiceContinuationMode
