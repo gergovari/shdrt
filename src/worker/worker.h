@@ -54,3 +54,4 @@ typedef struct shdrt_worker {
 } shdrt_worker_t;
 
 void shdrt_worker_create(shdrt_worker_id_t id, shdrt_package_identifier_t package_id);
+void shdrt_worker_send_message(shdrt_worker_id_t id, shdrt_worker_message_t message);
