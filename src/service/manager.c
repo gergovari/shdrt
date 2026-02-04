@@ -5,7 +5,7 @@
 
 // TODO: error handling (like if add returns false and such)
 
-bool
+static bool
 shdrt_ServiceManager_is_used(shdrt_ServiceManager* man, shdrt_Service s) {
     return shdrt_ServiceContextMap_is_created(&man->created, s) ||
            //shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
@@ -41,7 +41,7 @@ shdrt_ServiceManager_create(shdrt_ServiceManager* man, shdrt_Service s) {
 }
 
 // TODO: implement memory management
-void
+static void
 shdrt_ServiceManager_set_continuation_mode(shdrt_Service s, shdrt_ServiceContinuationMode mode) {}
 
 bool
