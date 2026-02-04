@@ -56,3 +56,6 @@ test/test_runner
 *.swp*
 
 .cache/*
+
+docs/html
+docs/latex
