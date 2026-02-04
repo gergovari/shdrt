@@ -1,8 +1,10 @@
 #include <fcntl.h>
 #include <mqueue.h>
+#include <unistd.h>
 #include <unity.h>
 
 #include "../src/worker/worker.h"
+#include "stc/common.h"
 #include "stc/sys/sumtype.h"
 #include "unity_internals.h"
 
@@ -14,6 +16,10 @@ tearDown(void) {}
 
 void
 test_worker() {
+    bool destroyed = false;
+    bool started = false;
+
+    bool is_created;
     ssize_t bytes;
     shdrt_worker_id_t id = 0;
     shdrt_worker_message_id_t message_id = 0;
@@ -28,25 +34,55 @@ test_worker() {
 
     mq_unlink(SHDRT_WORKER_MQ_OUT_NAME);
     mq_results = mq_open(SHDRT_WORKER_MQ_OUT_NAME, O_CREAT | O_RDONLY, 0644, &attr);
+    TEST_ASSERT_FALSE(mq_results == -1);
 
-    shdrt_worker_create(id, shdrt_package_identifier_make("shd.calculator"));
-    shdrt_worker_send_message(id, message);
+    c_with(is_created = shdrt_worker_create(id, shdrt_package_identifier_make("shd.calculator")), is_created,
+           shdrt_worker_destroy(id)) {
+        shdrt_worker_send_message(id, message);
 
-    printf("before receive\n");
+        bytes = mq_receive(mq_results, (char*)&returned, sizeof(returned), NULL);
+        TEST_ASSERT_TRUE(bytes > 0);
+        c_when(&returned) {
+            c_is(shdrt_worker_message_job) { TEST_FAIL_MESSAGE("Returned message was a job not a result!"); }
+            c_is(shdrt_worker_message_result, message) {
+                TEST_ASSERT_TRUE(message->id == message_id);
+                c_when(&message->result) {
+                    c_is(shdrt_worker_result_destroy) {
+                        TEST_FAIL_MESSAGE("Returned result message was stop service not start service!");
+                    }
+                    c_is(shdrt_worker_result_start_service, result) {
+                        TEST_ASSERT_TRUE(result);
+                        started = true;
+                    }
+                    c_is(shdrt_worker_result_stop_service) {
+                        TEST_FAIL_MESSAGE("Returned result message was stop service not start service!");
+                    }
+                }
+            }
+        }
+    }
+    TEST_ASSERT_TRUE(is_created);
+
     bytes = mq_receive(mq_results, (char*)&returned, sizeof(returned), NULL);
     TEST_ASSERT_TRUE(bytes > 0);
     c_when(&returned) {
         c_is(shdrt_worker_message_job) { TEST_FAIL_MESSAGE("Returned message was a job not a result!"); }
-        c_is(shdrt_worker_message_result, result) {
-            TEST_ASSERT_TRUE(result->id == message_id);
-            c_when(&result->result) {
-                c_is(shdrt_worker_result_stop_service) {
-                    TEST_FAIL_MESSAGE("Returned result message was stop service not start service!");
+        c_is(shdrt_worker_message_result, message) {
+            TEST_ASSERT_TRUE(message->id == SHDRT_WORKER_ID_LAST);
+            c_when(&message->result) {
+                c_is(shdrt_worker_result_destroy) { destroyed = true; }
+                c_is(shdrt_worker_result_start_service, result) {
+                    TEST_FAIL_MESSAGE("Returned result message was stop service not destroy!");
                 }
-                c_is(shdrt_worker_result_start_service, result) { TEST_ASSERT_TRUE(result); }
+                c_is(shdrt_worker_result_stop_service) {
+                    TEST_FAIL_MESSAGE("Returned result message was stop service not destroy!");
+                }
             }
         }
     }
+
+    TEST_ASSERT_TRUE(started);
+    TEST_ASSERT_TRUE(destroyed);
 }
 
 int

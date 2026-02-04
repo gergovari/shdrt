@@ -22,52 +22,77 @@ shdrt_worker_mq_send(shdrt_worker_t* this, shdrt_worker_message_t* msg_ptr) {
     return mq_send(this->out, (char*)msg_ptr, sizeof(*msg_ptr), 0);
 }
 
-static void
+static bool
 shdrt_worker_handle_job(shdrt_worker_t* this, shdrt_worker_job_t job, shdrt_worker_message_id_t id) {
     c_when(&job) {
+        c_is(shdrt_worker_job_destroy) {
+            shdrt_worker_result_t result = c_variant(shdrt_worker_result_destroy, NULL);
+            shdrt_worker_message_t message = c_variant(shdrt_worker_message_result, {.id = id, .result = result});
+            shdrt_worker_mq_send(this, &message);
+
+            return false;
+        }
         c_is(shdrt_worker_job_start_service, job) {
-            shdrt_worker_result_start_service_type result = false;
+            shdrt_worker_result_t result;
+            shdrt_worker_message_t message;
+            bool ret;
             shdrt_Service s;
 
+            printf("worker: main job start_service (id: %ld)\n", id);
+
             if (shdrt_package_get_service(this->package, job->id, &s)) {
-                result = shdrt_ServiceManager_start(&this->service_manager, s, job->intent);
+                ret = shdrt_ServiceManager_start(&this->service_manager, s, job->intent);
             }
 
-            shdrt_worker_message_t message = c_variant(shdrt_worker_message_result, {.id = id, .result = result});
+            result = c_variant(shdrt_worker_result_start_service, ret);
+            message = c_variant(shdrt_worker_message_result, {.id = id, .result = result});
             shdrt_worker_mq_send(this, &message);
         }
         c_is(shdrt_worker_job_stop_service, job) {
-            shdrt_worker_result_start_service_type result = false;
+            shdrt_worker_result_t result;
+            shdrt_worker_message_t message;
+            bool ret;
             shdrt_Service s;
 
             if (shdrt_package_get_service(this->package, *job, &s)) {
-                result = shdrt_ServiceManager_stop(&this->service_manager, s);
+                ret = shdrt_ServiceManager_stop(&this->service_manager, s);
             }
 
-            shdrt_worker_message_t message = c_variant(shdrt_worker_message_result, {.id = id, .result = result});
+            result = c_variant(shdrt_worker_result_start_service, ret);
+            message = c_variant(shdrt_worker_message_result, {.id = id, .result = result});
             shdrt_worker_mq_send(this, &message);
         }
     }
+
+    return true;
 }
 
-static void
+static bool
 shdrt_worker_receive_message(shdrt_worker_t* this) {
     shdrt_worker_message_t message;
+    printf("worker: receiving\n");
     ssize_t bytes = shdrt_worker_mq_receive(this, &message);
+    printf("worker: received (%ld)\n", bytes);
 
     if (bytes > 0) {
         c_when(&message) {
-            c_is(shdrt_worker_message_job, message) { shdrt_worker_handle_job(this, message->job, message->id); }
-            c_is(shdrt_worker_message_result, message) { return; }
+            c_is(shdrt_worker_message_job, message) { return shdrt_worker_handle_job(this, message->job, message->id); }
+            c_is(shdrt_worker_message_result, message) { return true; }
         }
     }
+
+    return true;
 }
 
 static bool
 shdrt_worker_loop(shdrt_worker_t* this) {
-    while (true) {
-        shdrt_worker_receive_message(this);
+    bool run = true;
+
+    while (run) {
+        run = shdrt_worker_receive_message(this);
     }
+
+    printf("worker: exited receive loop\n");
     return true;
 }
 
@@ -86,8 +111,8 @@ shdrt_worker_make(shdrt_worker_id_t id, shdrt_package_identifier_t package_id) {
     char name[64];
     struct mq_attr attr = {.mq_maxmsg = SHDRT_WORKER_MQ_IN_MAX_MSG, .mq_msgsize = sizeof(shdrt_worker_message_t)};
 
-    mq_unlink(name);
     shdrt_worker_name_from_id((char*)&name, id);
+    mq_unlink(name);
     return (shdrt_worker_t){.id = id,
                             .service_manager = shdrt_ServiceManager_make(),
                             .package = shdrt_package_load(package_id),
@@ -105,9 +130,16 @@ shdrt_worker_drop(shdrt_worker_t* this) {
     mq_close(this->out);
 }
 
-void
+bool
 shdrt_worker_create(shdrt_worker_id_t id, shdrt_package_identifier_t package_id) {
-    if (fork() == 0) {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        return false;
+    } else if (pid == 0) {
+        return true;
+    } else {
+        printf("worker: forked! (with %d pid)\n", pid);
         int status = EXIT_SUCCESS;
         shdrt_worker_t this = shdrt_worker_make(id, package_id);
 
@@ -121,7 +153,16 @@ shdrt_worker_create(shdrt_worker_id_t id, shdrt_package_identifier_t package_id)
 
         shdrt_worker_drop(&this);
         exit(status);
+        return false;
     }
+}
+
+void
+shdrt_worker_destroy(shdrt_worker_id_t id) {
+    shdrt_worker_message_t message = c_variant(
+        shdrt_worker_message_job, {.id = SHDRT_WORKER_ID_LAST, .job = c_variant(shdrt_worker_job_destroy, NULL)});
+    shdrt_worker_send_message(id, message);
+    printf("main: sent message to worker to destroy!\n");
 }
 
 void

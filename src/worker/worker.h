@@ -7,7 +7,6 @@
 #include <stc/algorithm.h>
 #include <stc/sys/sumtype.h>
 
-#include "../component_id.h"
 #include "../package/package.h"
 #include "../package/package_id.h"
 #include "../service/manager.h"
@@ -16,9 +15,10 @@
 #define SHDRT_WORKER_MQ_IN_FMT     "/worker_%" PRIu64 "_queue"
 #define SHDRT_WORKER_MQ_IN_MAX_MSG 10
 
-typedef u_int64_t shdrt_worker_id_t;
+typedef int64_t shdrt_worker_id_t;
+#define SHDRT_WORKER_ID_LAST -1
 
-c_union(shdrt_worker_job_t,
+c_union(shdrt_worker_job_t, (shdrt_worker_job_destroy, void*),
         (
             shdrt_worker_job_start_service,
             struct {
@@ -27,7 +27,8 @@ c_union(shdrt_worker_job_t,
             }),
         (shdrt_worker_job_stop_service, shdrt_ComponentIdentifier), );
 
-c_union(shdrt_worker_result_t, (shdrt_worker_result_start_service, bool), (shdrt_worker_result_stop_service, bool), );
+c_union(shdrt_worker_result_t, (shdrt_worker_result_destroy, void*), (shdrt_worker_result_start_service, bool),
+        (shdrt_worker_result_stop_service, bool), );
 
 typedef u_int64_t shdrt_worker_message_id_t;
 c_union(shdrt_worker_message_t,
@@ -53,5 +54,7 @@ typedef struct shdrt_worker {
     mqd_t out;
 } shdrt_worker_t;
 
-void shdrt_worker_create(shdrt_worker_id_t id, shdrt_package_identifier_t package_id);
+bool shdrt_worker_create(shdrt_worker_id_t id, shdrt_package_identifier_t package_id);
+void shdrt_worker_destroy(shdrt_worker_id_t id); /* TODO: refactor to bool */
+
 void shdrt_worker_send_message(shdrt_worker_id_t id, shdrt_worker_message_t message);
