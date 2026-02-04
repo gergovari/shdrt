@@ -4,7 +4,7 @@
 
 #include "../component_id.h"
 
-struct shdrt_worker_manager {
-} typedef shdrt_worker_manager_t;
+typedef struct shdrt_worker_manager {
+} shdrt_worker_manager_t;
 
 bool shdrt_worker_manager_start_service(shdrt_worker_manager_t* this, shdrt_ComponentIdentifier id);
