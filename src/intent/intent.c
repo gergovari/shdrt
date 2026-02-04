@@ -4,21 +4,43 @@
 
 #include "../component_id.h"
 
-int shdrt_Intent_cmp(const shdrt_Intent* a, const shdrt_Intent* b) {
-	bool id = a->explicitId && b->explicitId ? shdrt_ComponentIdentifier_equals(&a->id, &b->id) : a->explicitId == b->explicitId;
-	bool action = a->explicitAction && b->explicitAction ? shdrt_IntentAction_cmp(&a->action, &b->action) == 0 : a->explicitAction == b->explicitAction;
-	bool data = a->explicitData && b->explicitData ? cstr_cmp(&a->data, &b->data) == 0 : a->explicitData == b->explicitData;
-	bool type = a->explicitType && b->explicitType ? cstr_cmp(&a->type, &b->type) == 0 : a->explicitType == b->explicitType;
-	bool category = a->category == b->category;
+/**
+ * @brief Compares two intents for ordering.
+ * 
+ * The comparison logic prioritizes fields in the following order:
+ * 1. Component ID
+ * 2. Action
+ * 3. Existence of ID (explicit vs implicit)
+ * 
+ * This ensures a deterministic order for storing intents in sorted collections.
+ */
+int
+shdrt_Intent_cmp(const shdrt_Intent* a, const shdrt_Intent* b) {
+    bool id = a->explicitId && b->explicitId ? shdrt_ComponentIdentifier_equals(&a->id, &b->id)
+                                             : a->explicitId == b->explicitId;
+    bool action = a->explicitAction && b->explicitAction ? shdrt_IntentAction_cmp(&a->action, &b->action) == 0
+                                                         : a->explicitAction == b->explicitAction;
+    bool data =
+        a->explicitData && b->explicitData ? cstr_cmp(&a->data, &b->data) == 0 : a->explicitData == b->explicitData;
+    bool type =
+        a->explicitType && b->explicitType ? cstr_cmp(&a->type, &b->type) == 0 : a->explicitType == b->explicitType;
+    bool category = a->category == b->category;
 
-	if (id && action && data && type && category) return 0;
+    if (id && action && data && type && category) {
+        return 0;
+    }
 
-	if (a->explicitId == b->explicitId && a->explicitId) return shdrt_ComponentIdentifier_cmp(&a->id, &b->id);
-	if (a->explicitAction == b->explicitAction && a->explicitAction) return cstr_cmp(&a->action, &b->action);
-	
-	return a->explicitId ? -1 : 1;
+    if (a->explicitId == b->explicitId && a->explicitId) {
+        return shdrt_ComponentIdentifier_cmp(&a->id, &b->id);
+    }
+    if (a->explicitAction == b->explicitAction && a->explicitAction) {
+        return cstr_cmp(&a->action, &b->action);
+    }
+
+    return a->explicitId ? -1 : 1;
 }
 
-bool shdrt_Intent_equals(const shdrt_Intent* a, const shdrt_Intent* b) {
-	return shdrt_Intent_cmp(a, b) == 0;
+bool
+shdrt_Intent_equals(const shdrt_Intent* a, const shdrt_Intent* b) {
+    return shdrt_Intent_cmp(a, b) == 0;
 }

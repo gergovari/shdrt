@@ -12,6 +12,13 @@
 #include "../service/manager.h"
 #include "../service/service.h"
 
+/**
+ * @brief Receives a message from the worker's input queue.
+ * 
+ * @param this Pointer to the worker instance.
+ * @param msg_ptr Pointer to the buffer where the received message will be stored.
+ * @return The number of bytes received, or -1 on error.
+ */
 static ssize_t
 shdrt_worker_mq_receive(shdrt_worker_t* this, shdrt_worker_message_t* msg_ptr) {
     return mq_receive(this->in, (char*)msg_ptr, sizeof(*msg_ptr), NULL);
@@ -22,6 +29,14 @@ shdrt_worker_mq_send(shdrt_worker_t* this, shdrt_worker_message_t* msg_ptr) {
     return mq_send(this->out, (char*)msg_ptr, sizeof(*msg_ptr), 0);
 }
 
+/**
+ * @brief Handles a job received by the worker.
+ * 
+ * @param this Pointer to the worker instance.
+ * @param job The job to execute.
+ * @param id The ID of the message corresponding to this job (for the result).
+ * @return true if the worker should continue running, false if it should exit.
+ */
 static bool
 shdrt_worker_handle_job(shdrt_worker_t* this, shdrt_worker_job_t job, shdrt_worker_message_id_t id) {
     c_when(&job) {
@@ -125,6 +140,17 @@ shdrt_worker_drop(shdrt_worker_t* this) {
     mq_close(this->out);
 }
 
+/**
+ * @brief Creates a new worker process.
+ * 
+ * This function forks the current process. The child process initializes a new
+ * worker instance, loads the specified package, and enters the worker loop.
+ * The parent process returns immediately.
+ * 
+ * @param id The unique worker ID.
+ * @param package_id The package to load.
+ * @return true if the fork was successful (in the parent), false otherwise.
+ */
 bool
 shdrt_worker_create(shdrt_worker_id_t id, shdrt_package_identifier_t package_id) {
     pid_t pid = fork();

@@ -5,19 +5,9 @@
 
 // TODO: error handling (like if add returns false and such)
 
-static bool
-shdrt_ServiceManager_is_used(shdrt_ServiceManager* man, shdrt_Service s) {
-    return shdrt_ServiceContextMap_is_created(&man->created, s) ||
-           //shdrt_ServiceConnectionMap_is_bound(&man->conns, s);
-           false;
-}
-
 shdrt_ServiceManager
 shdrt_ServiceManager_make() {
-    return (shdrt_ServiceManager){
-        //.created = {0}, .startIds = {0}, .conns = {0}, .binders = {0}, .intents = {0}, .connBinders = {0}};
-        .created = {0},
-        .startIds = {0}};
+    return (shdrt_ServiceManager){.created = {0}, .startIds = {0}};
 }
 
 void
@@ -26,6 +16,13 @@ shdrt_ServiceManager_drop(shdrt_ServiceManager* man) {
     shdrt_ServiceStartIdMap_drop(&man->startIds);
 }
 
+/**
+ * @brief Creates a new service context or returns an existing one.
+ * 
+ * @param man Pointer to the Service Manager.
+ * @param s The service to possibly create.
+ * @return Pointer to the service context.
+ */
 shdrt_ServiceContext*
 shdrt_ServiceManager_create(shdrt_ServiceManager* man, shdrt_Service s) {
     shdrt_ServiceContext* ctx;

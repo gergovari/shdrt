@@ -5,7 +5,6 @@
  * This header provides the type definition for Intent Actions, which represent
  * the general operation to be performed (e.g., viewing or editing data).
  * It includes a registry of standard action constants used throughout the system.
- *
  */
 
 #pragma once

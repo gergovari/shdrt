@@ -1,5 +1,16 @@
 #include "context_map.h"
 
+/**
+ * @brief Creates or retrieves a service context.
+ * 
+ * Accesses lifecycle callbacks on the service object.
+ * 
+ * @param map The map.
+ * @param s The service.
+ * @param man The manager.
+ * @param stop The stop callback.
+ * @return The context or NULL.
+ */
 shdrt_ServiceContext*
 shdrt_ServiceContextMap_create(shdrt_ServiceContextMap* map, shdrt_Service s, shdrt_ServiceManager* man,
                                shdrt_ServiceStopCallback stop) {
@@ -20,6 +31,13 @@ shdrt_ServiceContextMap_create(shdrt_ServiceContextMap* map, shdrt_Service s, sh
     return s.on_create(ctx) ? ctx : NULL;
 }
 
+/**
+ * @brief Destroys a service context.
+ * 
+ * @param map The map.
+ * @param s The service.
+ * @return true if destroyed.
+ */
 bool
 shdrt_ServiceContextMap_destroy(shdrt_ServiceContextMap* map, shdrt_Service s) {
     const shdrt_ServiceContextMap_value* val = shdrt_ServiceContextMap_get(map, s);

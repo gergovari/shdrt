@@ -8,7 +8,6 @@
 
 #include "../common.h"
 
-// TODO: implement these
 /** @name Intent categories
  * Constants used for intent categories.
  * @{ */
@@ -16,16 +15,16 @@
 #ifdef DOXYGEN
 
 /**
- * @brief The activity is the initial activity of a task and is listed in the system's application launcher.
+ * @brief Activity Category: The activity is the initial activity of a task and is listed in the system's application launcher.
  * 
  */
-const char* SHDRT_INTENT_CATEGORY_FLAG_LAUNCHER;
+extern const char* SHDRT_INTENT_CATEGORY_FLAG_LAUNCHER;
 
 /**
- * @brief To be used as a test (not part of the normal user experience).
+ * @brief Activity Category: To be used as a test (not part of the normal user experience).
  * 
  */
-const char* SHDRT_INTENT_CATEGORY_FLAG_TEST;
+extern const char* SHDRT_INTENT_CATEGORY_FLAG_TEST;
 
 #else
 

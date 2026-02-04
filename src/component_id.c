@@ -1,5 +1,14 @@
 #include "component_id.h"
 
+/**
+ * @brief Creates a new ComponentIdentifier.
+ * 
+ * Copies the provided package and name strings into the new identifier.
+ * 
+ * @param package The package name.
+ * @param name The component name.
+ * @return A new shdrt_ComponentIdentifier with owned strings.
+ */
 shdrt_ComponentIdentifier
 shdrt_ComponentIdentifier_make(const char* package, const char* name) {
     return (shdrt_ComponentIdentifier){.package = cstr_from(package), .name = cstr_from(name)};

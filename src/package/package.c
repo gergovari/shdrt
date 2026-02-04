@@ -6,6 +6,11 @@
 
 #include "package_id.h"
 
+/**
+ * @brief Hardcoded 'on_create' handler for the calculator service.
+ * @param ctx The service context.
+ * @return true.
+ */
 static bool
 shd_calculator_cumulate_on_create(shdrt_ServiceContext* ctx) {
     ctx->user = c_new(u_int64_t, 0);
@@ -38,6 +43,15 @@ shdrt_package_get_service(shdrt_package_t* this, shdrt_ComponentIdentifier id, s
     }
 }
 
+/**
+ * @brief Loads a package by ID.
+ * 
+ * @note Currently contains hardcoded logic for the "shd.calculator" package.
+ * Future implementations should load packages dynamically.
+ * 
+ * @param id The package identifier.
+ * @return A new shdrt_package_t* or NULL.
+ */
 shdrt_package_t*
 shdrt_package_load(shdrt_package_identifier_t id) {
     shdrt_package_identifier_t id2 = shdrt_package_identifier_make("shd.calculator");
