@@ -38,8 +38,6 @@ shdrt_worker_handle_job(shdrt_worker_t* this, shdrt_worker_job_t job, shdrt_work
             bool ret;
             shdrt_Service s;
 
-            printf("worker: main job start_service (id: %ld)\n", id);
-
             if (shdrt_package_get_service(this->package, job->id, &s)) {
                 ret = shdrt_ServiceManager_start(&this->service_manager, s, job->intent);
             }
@@ -70,9 +68,7 @@ shdrt_worker_handle_job(shdrt_worker_t* this, shdrt_worker_job_t job, shdrt_work
 static bool
 shdrt_worker_receive_message(shdrt_worker_t* this) {
     shdrt_worker_message_t message;
-    printf("worker: receiving\n");
     ssize_t bytes = shdrt_worker_mq_receive(this, &message);
-    printf("worker: received (%ld)\n", bytes);
 
     if (bytes > 0) {
         c_when(&message) {
@@ -92,7 +88,6 @@ shdrt_worker_loop(shdrt_worker_t* this) {
         run = shdrt_worker_receive_message(this);
     }
 
-    printf("worker: exited receive loop\n");
     return true;
 }
 
@@ -139,7 +134,6 @@ shdrt_worker_create(shdrt_worker_id_t id, shdrt_package_identifier_t package_id)
     } else if (pid == 0) {
         return true;
     } else {
-        printf("worker: forked! (with %d pid)\n", pid);
         int status = EXIT_SUCCESS;
         shdrt_worker_t this = shdrt_worker_make(id, package_id);
 
@@ -162,7 +156,6 @@ shdrt_worker_destroy(shdrt_worker_id_t id) {
     shdrt_worker_message_t message = c_variant(
         shdrt_worker_message_job, {.id = SHDRT_WORKER_ID_LAST, .job = c_variant(shdrt_worker_job_destroy, NULL)});
     shdrt_worker_send_message(id, message);
-    printf("main: sent message to worker to destroy!\n");
 }
 
 void
